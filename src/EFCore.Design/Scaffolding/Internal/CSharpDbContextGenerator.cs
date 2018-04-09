@@ -116,6 +116,7 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
 
             using (_sb.Indent())
             {
+                GenerateConstructors(contextName);
                 GenerateDbSets(model);
                 GenerateEntityTypeErrors(model);
                 GenerateOnConfiguring(connectionString, suppressConnectionStringWarning);
@@ -123,6 +124,20 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
             }
 
             _sb.AppendLine("}");
+        }
+
+        private void GenerateConstructors(string contextName)
+        {
+            _sb.AppendLine($"public {contextName}()")
+                .AppendLine("{}")
+                .AppendLine();
+
+            _sb.AppendLine($"public {contextName}(DbContextOptions<{contextName}> options)")
+                .IncrementIndent()
+                .AppendLine(": base(options)")
+                .DecrementIndent()
+                .AppendLine("{}")
+                .AppendLine();
         }
 
         private void GenerateDbSets(IModel model)
